@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# S3 / R2 Instant Uploader
+
+A privacy-focused, server-side proxy image uploader for Cloudflare R2 and AWS S3 built with Next.js and Tailwind CSS.
+
+## Features
+
+- 🔒 **Server-Side Uploads**: No CORS configuration required on your buckets.
+- 🛡️ **Privacy Focused**: Credentials are stored in your browser's `localStorage` and never saved to a database.
+- ⚡ **Multi-Provider**: Instant switching between Cloudflare R2 and AWS S3.
+- 🎨 **Modern UI**: Clean, responsive interface built with Tailwind CSS.
+- 📋 **Instant Copy**: Auto-generates public URLs for immediate use.
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Run Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This tool uses a \"Bring Your Own Keys\" model. You paste your credentials directly into the UI. The app handles parsing environment variable strings automatically.
 
-## Learn More
+### Cloudflare R2 Format
+Select **Cloudflare R2** in the UI and paste:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+R2_ACCOUNT_ID=your_account_id
+R2_ACCESS_KEY_ID=your_access_key
+R2_SECRET_ACCESS_KEY=your_secret_key
+R2_BUCKET_NAME=your_bucket_name
+R2_PUBLIC_URL=pub-xxx.r2.dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### AWS S3 Format
+Select **AWS S3** in the UI and paste:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=us-east-1
+AWS_BUCKET_NAME=your_bucket_name
+```
 
-## Deploy on Vercel
+## How it Works
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Frontend**: You paste credentials into the browser. They are saved to your browser's `LocalStorage` for convenience.
+2. **Upload Request**: When you pick a file, the file and your credentials are sent securely to the Next.js API Route (`/api/upload`).
+3. **Server Proxy**: The Next.js server (running Node.js) initializes an S3 Client temporarily, uploads the file, and returns the public URL.
+4. **Security**: The server does not log or save your keys. The upload happens server-to-server, which bypasses browser CORS restrictions.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+This project is designed to be deployed on **Vercel**.
+
+**Note:** Because this tool relies on the user pasting keys into the browser, you do not need to set Environment Variables in your Vercel project settings for the S3 connection itself.
+
+## License
+
+MIT
